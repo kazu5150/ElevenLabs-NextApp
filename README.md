@@ -2,6 +2,11 @@
 
 Next.jsとElevenLabs APIを使用したモダンなAI音声合成・認識アプリケーション
 
+<div align="center">
+  <img src="docs/images/voicestudio-ui.png" alt="VoiceStudio UI" width="800" />
+  <p><em>洗練されたダークテーマのモダンUI</em></p>
+</div>
+
 ## ✨ 機能
 
 - **🔊 テキスト読み上げ (TTS)** - ElevenLabs AIを使用してテキストを自然な音声に変換
