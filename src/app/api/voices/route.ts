@@ -1,5 +1,11 @@
 import { NextResponse } from 'next/server';
 
+interface ElevenLabsVoice {
+  voice_id: string;
+  name: string;
+  category: string;
+}
+
 const defaultVoices = [
   {
     voice_id: 'pNInz6obpgDQGcFmaJgB',
@@ -47,7 +53,7 @@ export async function GET() {
     const data = await response.json();
     
     return NextResponse.json({
-      voices: data.voices?.map((voice: any) => ({
+      voices: data.voices?.map((voice: ElevenLabsVoice) => ({
         voice_id: voice.voice_id,
         name: voice.name,
         category: voice.category,
