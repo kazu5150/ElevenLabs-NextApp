@@ -4,10 +4,10 @@
 
 ## 📋 プロジェクト概要
 
-**プロジェクト名**: VoiceStudio  
-**開発期間**: 2025年6月15日  
-**技術スタック**: Next.js 15, TypeScript, ElevenLabs API, Tailwind CSS  
-**目的**: AI音声合成・認識アプリケーションの構築
+**プロジェクト名**: VoiceStudio + VoiceChat  
+**開発期間**: 2025年6月15日 - 2025年6月19日  
+**技術スタック**: Next.js 15, TypeScript, ElevenLabs API, OpenAI API, Tailwind CSS  
+**目的**: AI音声合成・認識 + リアルタイム音声チャットボット構築
 
 ## 🚀 開発プロセス
 
@@ -99,6 +99,40 @@ accent-colors: purple-500, cyan-500, blue-500
 effects: backdrop-blur-xl, shadow-2xl, hover:scale-105
 ```
 
+### フェーズ6: OpenAI統合 (2025年6月19日)
+- OpenAI GPT-4o-mini APIの統合
+- `/api/chat/route.ts`エンドポイント作成
+- リアルタイム音声チャットボット実装
+
+#### 技術的課題と解決策
+**課題**: Hydrationエラー
+```
+Hydration failed because the server rendered HTML didn't match the client
+```
+
+**解決策**: Dateオブジェクトの文字列化とクライアントサイドレンダリング
+```typescript
+// 変更前: Dateオブジェクト使用
+interface ChatMessage {
+  timestamp: Date;
+}
+
+// 変更後: 文字列で保存
+interface ChatMessage {
+  timestamp: string;
+}
+
+// クライアントサイドでのみ表示
+{isClient && (
+  <span>{message.timestamp}</span>
+)}
+```
+
+### フェーズ7: 音声チャットボット機能
+- 音声入力→STT→GPT→TTS→音声出力の完全自動化
+- チャット履歴管理とUI実装
+- モード切替機能（Studio/Chat）
+
 ## 🔧 API設定要件
 
 ### ElevenLabs API権限
@@ -106,9 +140,14 @@ effects: backdrop-blur-xl, shadow-2xl, hover:scale-105
 - **Speech to Text**: `Has access`  
 - **Voices**: `Read only`
 
+### OpenAI API権限
+- **Chat Completions**: `Required`
+- **Models**: `gpt-4o-mini`
+
 ### 環境変数
 ```env
 ELEVENLABS_API_KEY=sk_xxxxxxxxxxxxx
+OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxx
 ```
 
 ## 📁 ファイル構成
@@ -118,8 +157,9 @@ src/app/
 ├── api/
 │   ├── tts/route.ts      # 音声合成エンドポイント
 │   ├── stt/route.ts      # 音声認識エンドポイント
+│   ├── chat/route.ts     # OpenAI チャットエンドポイント
 │   └── voices/route.ts   # 音声リストエンドポイント
-├── page.tsx              # メインUI (VoiceStudio)
+├── page.tsx              # メインUI (VoiceStudio + VoiceChat)
 └── layout.tsx            # アプリケーションレイアウト
 ```
 
@@ -141,6 +181,10 @@ src/app/
 - **問題**: 英語モデルでの日本語発音
 - **解決**: `eleven_multilingual_v2`モデル使用
 
+### 5. Hydrationエラー (2025年6月19日)
+- **問題**: サーバーとクライアントでDateオブジェクトが異なる
+- **解決**: timestampの文字列化とクライアントサイドレンダリング
+
 ## 🎯 機能仕様
 
 ### Text-to-Speech
@@ -155,11 +199,19 @@ src/app/
 - **モデル**: `scribe_v1`
 - **言語**: 日本語 (`ja`)
 
+### Voice Chat (新機能)
+- **入力**: 音声 → STT → GPT-4o-mini → TTS → 音声出力
+- **会話履歴**: リアルタイムチャット表示
+- **自動処理**: 音声認識後の自動チャット開始
+- **自動再生**: AI応答の自動音声再生
+
 ### UI/UX
 - **テーマ**: ダークモード
+- **モード切替**: Studio Mode ⇄ Chat Mode
 - **レスポンシブ**: モバイル対応
 - **アニメーション**: ホバー効果、スケール変換
 - **アクセシビリティ**: マイク権限管理
+- **チャット履歴**: メッセージバブル表示、クリア機能
 
 ## 📝 開発のベストプラクティス
 
@@ -190,7 +242,8 @@ catch (error) {
 ### Vercel設定
 ```bash
 # 環境変数設定
-ELEVENLABS_API_KEY=your_api_key_here
+ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
 
 # ビルド設定
 npm run build
@@ -198,9 +251,10 @@ npm run start
 ```
 
 ### 運用監視
-- API使用量の監視
+- API使用量の監視 (ElevenLabs + OpenAI)
 - エラーログの追跡
 - パフォーマンスメトリクスの確認
+- 音声チャット応答時間の監視
 
 ## 📈 今後の拡張可能性
 
@@ -208,17 +262,34 @@ npm run start
 - [ ] 複数音声の選択機能
 - [ ] 音声速度・ピッチ調整
 - [ ] 音声ファイルのエクスポート機能
-- [ ] リアルタイム音声変換
-- [ ] 音声履歴管理
+- [ ] チャットボットキャラクター設定
+- [ ] 会話履歴の永続化
+- [x] ✅ リアルタイム音声チャットボット
+- [x] ✅ OpenAI GPT統合
 
 ### 技術改善案
 - [ ] キャッシュ機能の実装
 - [ ] PWA対応
 - [ ] オフライン機能
 - [ ] WebRTC活用
+- [ ] ストリーミングレスポンス
+- [ ] 感情分析機能
 
 ---
 
 **開発者**: Claude Code AIアシスタント  
 **協力者**: User  
-**最終更新**: 2025年6月15日
+**最終更新**: 2025年6月19日
+
+## 🎉 VoiceChat統合完了
+
+2025年6月19日にOpenAI統合が完了し、VoiceStudioがリアルタイム音声チャットボット機能を搭載したVoiceChatに進化しました。
+
+### 🔄 新機能フロー
+```
+音声入力 → ElevenLabs STT → OpenAI GPT-4o-mini → ElevenLabs TTS → 音声出力
+    ↑                                                                     ↓
+会話履歴保存 ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+```
+
+これで、自然な日本語での音声対話が可能なAIアシスタントが完成しました。
